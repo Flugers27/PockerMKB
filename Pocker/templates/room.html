@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Комната {{ room_id }}</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Комната: {{ room_id }}</h1>
+    <div id="users"></div>
+    <div>
+        <button onclick="vote(1)">1</button>
+        <button onclick="vote(2)">2</button>
+        <button onclick="vote(3)">3</button>
+        <button onclick="vote(5)">5</button>
+        <button onclick="vote(8)">8</button>
+    </div>
+
+    <script>
+        const socket = io();
+
+        const room = "{{ room_id }}";
+        const username = prompt("Введите ваше имя:");
+        socket.emit('join', { username, room });
+
+        socket.on('user_joined', data => {
+            document.getElementById('users').innerText = "Участники: " + data.users.join(", ");
+        });
+
+        socket.on('vote_update', data => {
+            alert(`${data.username} проголосовал: ${data.vote}`);
+        });
+
+        function vote(value) {
+            socket.emit('vote', { username, room, vote: value });
+        }
+    </script>
+</body>
+</html>
